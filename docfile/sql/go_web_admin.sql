@@ -1,13 +1,16 @@
 /*
 Navicat MySQL Data Transfer
+
 Source Server         : 192.168.100.50
 Source Server Version : 50722
 Source Host           : 192.168.100.50:3306
-Source Database       : go
+Source Database       : go_web_admin
+
 Target Server Type    : MYSQL
 Target Server Version : 50722
 File Encoding         : 65001
-Date: 2019-12-26 15:30:48
+
+Date: 2020-01-08 17:49:55
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -106,13 +109,13 @@ CREATE TABLE `go_user` (
   `modified_on` int(11) unsigned DEFAULT NULL COMMENT '更新时间',
   `deleted_on` int(11) unsigned DEFAULT '0' COMMENT '删除时间戳',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='用户管理';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='用户管理';
 
 -- ----------------------------
 -- Records of go_user
 -- ----------------------------
-INSERT INTO `go_user` VALUES ('1', 'admin', 'e10adc3949ba59abbe56e057f20f883e', null, null, '0');
-INSERT INTO `go_user` VALUES ('2', 'hequan', 'e10adc3949ba59abbe56e057f20f883e', '1550642309', '1550642309', '0');
+INSERT INTO `go_user` VALUES ('1', 'admin', '7c4a8d09ca3762af61e59520943dc26494f8941b', '1578472400', '1578472400', '0');
+INSERT INTO `go_user` VALUES ('2', 'hequan', '7c4a8d09ca3762af61e59520943dc26494f8941b', '1578472414', '1578472414', '0');
 
 -- ----------------------------
 -- Table structure for go_user_role
