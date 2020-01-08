@@ -1,0 +1,14 @@
+# 应用系统设置
+[setting]
+    logpath = "log/"
+    JwtSecret = "123456789"
+    PageSize = 2
+
+# 数据库连接
+[database]
+    host = "192.168.100.50:3306"
+    user = "root"
+    pass = "123456"
+    name = "go_web_admin"
+    type = "mysql"
+    TablePrefix = "go_"
