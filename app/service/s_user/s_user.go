@@ -1,7 +1,7 @@
 package s_user
 
 import (
-	"github.com/casbin/casbin"
+	"github.com/casbin/casbin/v2"
 	"github.com/gogf/gf/crypto/gsha1"
 	"github.com/gogf/gf/os/glog"
 	"go-web-admin/app/model"

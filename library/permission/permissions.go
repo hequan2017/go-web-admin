@@ -25,7 +25,7 @@ func CasbinMiddleware(r *ghttp.Request) {
 		})
 		glog.Info("-----权限验证-----", jwtGet.GetIdFromClaims("username", t.Claims), r.Request.URL.Path, r.Request.Method)
 
-		if b, err := inject.Obj.Enforcer.EnforceSafe(jwtGet.GetIdFromClaims("username", t.Claims), r.Request.URL.Path, r.Request.Method); err != nil {
+		if b, err := inject.Obj.Enforcer.Enforce(jwtGet.GetIdFromClaims("username", t.Claims), r.Request.URL.Path, r.Request.Method); err != nil {
 			_ = r.Response.WriteJson(g.Map{
 				"code": http.StatusInternalServerError,
 				"msg":  e.GetMsg(e.ERROR_AUTH_CHECK_TOKEN_FAIL),

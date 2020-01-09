@@ -17,4 +17,5 @@ log/*
 */.DS_Store
 */.idea
 */bin
-*.exe
+go-web-admin.exe
+

@@ -16,12 +16,14 @@ type Controller struct{}
 
 var rules = map[string]string{
 	"name":   "required",
+	"type":   "required",
 	"path":   "required",
 	"method": "required",
 }
 
 var msgs = map[string]interface{}{
 	"name":   "菜单名称 不能为空",
+	"type":   "类型 不能为空，只能为 菜单/目录/按钮",
 	"path":   "路径 不能为空",
 	"method": "方法 不能为空",
 }
@@ -78,6 +80,7 @@ func (c *Controller) Post(r *ghttp.Request) {
 	}
 	menuService := s_menu.Menu{
 		Name:   data.GetString("name"),
+		Type:   data.GetString("type"),
 		Path:   data.GetString("path"),
 		Method: data.GetString("method"),
 	}

@@ -1,7 +1,7 @@
 package s_role
 
 import (
-	"github.com/casbin/casbin"
+	"github.com/casbin/casbin/v2"
 	"github.com/gogf/gf/os/glog"
 	"go-web-admin/app/model"
 	"go-web-admin/library/e"

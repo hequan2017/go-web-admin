@@ -24,13 +24,13 @@ type Claims struct {
 // 生成token
 func GenerateToken(username string) (string, error) {
 	nowTime := time.Now()
-	expireTime := nowTime.Add(24 * time.Hour)
+	expireTime := nowTime.Add(48 * time.Hour)
 
 	claims := Claims{
 		username,
 		jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
-			Issuer:    "https://github.com/hequan2017/go-admin/",
+			Issuer:    "https://github.com/hequan2017/go-web-admin/",
 		},
 	}
 

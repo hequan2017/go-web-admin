@@ -1,7 +1,7 @@
 package inject
 
 import (
-	"github.com/casbin/casbin"
+	"github.com/casbin/casbin/v2"
 	"github.com/facebookgo/inject"
 	"go-web-admin/app/service/s_common"
 	"runtime"
@@ -27,7 +27,7 @@ func init() {
 	} else if osType == "linux" {
 		path = "config/rbac_model.conf"
 	}
-	enforcer := casbin.NewEnforcer(path, false)
+	enforcer, _ := casbin.NewEnforcer(path, false)
 	_ = g.Provide(&inject.Object{Value: enforcer})
 
 	Common := new(s_common.Common)

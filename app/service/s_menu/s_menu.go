@@ -2,7 +2,7 @@ package s_menu
 
 import (
 	"fmt"
-	"github.com/casbin/casbin"
+	"github.com/casbin/casbin/v2"
 	"go-web-admin/app/model"
 	"go-web-admin/app/service/s_role"
 )
@@ -10,6 +10,7 @@ import (
 type Menu struct {
 	ID     int
 	Name   string
+	Type   string
 	Path   string
 	Method string
 
@@ -26,6 +27,7 @@ type Menu struct {
 func (a *Menu) Add() error {
 	menu := map[string]interface{}{
 		"name":   a.Name,
+		"type":   a.Type,
 		"path":   a.Path,
 		"method": a.Method,
 	}
@@ -40,6 +42,7 @@ func (a *Menu) Edit() error {
 
 	err := model.EditMenu(a.ID, map[string]interface{}{
 		"name":   a.Name,
+		"type":   a.Type,
 		"path":   a.Path,
 		"method": a.Method,
 	})
