@@ -47,6 +47,8 @@ github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/gogf/gf v1.11.1 h1:kYZY3zgo1pAYMWl00yO9AP29yPMSJrxFSdZsyXZ36z8=
 github.com/gogf/gf v1.11.1/go.mod h1:/37gncPmuM06D4YSqiDze9GsasDtF2QnWkUfKeiGW/Q=
+github.com/gogf/gf v1.11.2 h1:fGXRk06DnR2w4tWTZu+aZbBmAVYEnB4FtDRXKMqPp6Q=
+github.com/gogf/gf v1.11.2/go.mod h1:/37gncPmuM06D4YSqiDze9GsasDtF2QnWkUfKeiGW/Q=
 github.com/gogo/protobuf v1.1.1/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/gogo/protobuf v1.2.0/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=

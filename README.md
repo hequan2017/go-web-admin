@@ -91,18 +91,50 @@ hequan     test
 
 
 go run  main.go
+2020-01-09 11:15:45.119 [INFO] 更新角色权限关系 [["hequan","运维部"]]
+2020-01-09 11:15:45.208 [INFO] 角色权限关系 [["hequan","运维部"]]
 
-2019/05/08 18:10:38 [info] replacing callback `gorm:update_time_stamp` from E:/go-web-admin/app/model/model.go:40
-2019/05/08 18:10:38 [info] replacing callback `gorm:update_time_stamp` from E:/go-web-admin/app/model/model.go:41
-2019/05/08 18:10:38 [info] replacing callback `gorm:delete` from E:/go-web-admin/app/model/model.go:42
-2019-05-08 18:10:38.345 [DEBU] [ghttp] SetServerRoot path: E:\go-web-admin\public
-2019-05-08 18:10:38.395 [INFO] 更新角色权限关系 [[hequan test]]
-2019-05-08 18:10:38.395 [INFO] 角色权限关系 [[hequan test]]
-2019-05-08 18:10:38.397 16856: http server started listening on [:8000]
+  SERVER  | DOMAIN  | ADDRESS | METHOD |       ROUTE       |                     HANDLER                      |    MIDDLEWARE
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | ALL    | /*                | go-web-admin/library/jwt.JWT                     | GLOBAL MIDDLEWARE
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | ALL    | /*                | go-web-admin/library/permission.CasbinMiddleware | GLOBAL MIDDLEWARE
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | ALL    | /*                | go-web-admin/router.MiddlewareCORS               | GLOBAL MIDDLEWARE
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | DELETE | /api/v1/menus/*id | go-web-admin/app/api/a_menu.(*Controller).Delete |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | GET    | /api/v1/menus/*id | go-web-admin/app/api/a_menu.(*Controller).Get    |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | POST   | /api/v1/menus/*id | go-web-admin/app/api/a_menu.(*Controller).Post   |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | PUT    | /api/v1/menus/*id | go-web-admin/app/api/a_menu.(*Controller).Put    |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | DELETE | /api/v1/roles/*id | go-web-admin/app/api/a_role.(*Controller).Delete |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | GET    | /api/v1/roles/*id | go-web-admin/app/api/a_role.(*Controller).Get    |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | POST   | /api/v1/roles/*id | go-web-admin/app/api/a_role.(*Controller).Post   |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | PUT    | /api/v1/roles/*id | go-web-admin/app/api/a_role.(*Controller).Put    |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | DELETE | /api/v1/users/*id | go-web-admin/app/api/a_user.(*Controller).Delete |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | GET    | /api/v1/users/*id | go-web-admin/app/api/a_user.(*Controller).Get    |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | POST   | /api/v1/users/*id | go-web-admin/app/api/a_user.(*Controller).Post   |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | PUT    | /api/v1/users/*id | go-web-admin/app/api/a_user.(*Controller).Put    |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | ALL    | /token            | go-web-admin/app/api/a_user.Login                |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
+  default | default | :8000   | ALL    | /userInfo         | go-web-admin/app/api/a_user.UserInfo             |
+|---------|---------|---------|--------|-------------------|--------------------------------------------------|-------------------|
 
 
 默认账户密码  admin  123456
 ```
+
 
 ## 所用组件
 * goframe
