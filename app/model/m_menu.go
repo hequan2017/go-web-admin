@@ -1,9 +1,5 @@
 package model
 
-import (
-	"github.com/jinzhu/gorm"
-)
-
 type Menu struct {
 	Model
 	Name   string `json:"name"`
@@ -14,7 +10,7 @@ type Menu struct {
 func ExistMenuByID(id int) (bool, error) {
 	var menu Menu
 	err := db.Select("id").Where("id = ? AND deleted_on = ? ", id, 0).First(&menu).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return false, err
 	}
 
@@ -37,7 +33,7 @@ func GetMenuTotal(maps interface{}) (int, error) {
 func GetMenus(pageNum int, pageSize int, maps interface{}) ([]*Menu, error) {
 	var menu []*Menu
 	err := db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&menu).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return nil, err
 	}
 	return menu, nil
@@ -46,7 +42,7 @@ func GetMenus(pageNum int, pageSize int, maps interface{}) ([]*Menu, error) {
 func GetMenu(id int) (*Menu, error) {
 	var menu Menu
 	err := db.Where("id = ? AND deleted_on = ? ", id, 0).First(&menu).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return nil, err
 	}
 

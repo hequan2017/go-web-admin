@@ -95,7 +95,7 @@ func (a *Role) Delete() error {
 	if err != nil {
 		return err
 	}
-	a.Enforcer.DeletePermissionsForUser(a.Name)
+	_, _ = a.Enforcer.DeletePermissionsForUser(a.Name)
 	return nil
 }
 
@@ -136,13 +136,13 @@ func (a *Role) LoadPolicy(id int) error {
 	if err != nil {
 		return err
 	}
-	a.Enforcer.DeleteRole(role.Name)
+	_, _ = a.Enforcer.DeleteRole(role.Name)
 
 	for _, menu := range role.Menu {
 		if menu.Path == "" || menu.Method == "" {
 			continue
 		}
-		a.Enforcer.AddPermissionForUser(role.Name, menu.Path, menu.Method)
+		_, _ = a.Enforcer.AddPermissionForUser(role.Name, menu.Path, menu.Method)
 	}
 	return nil
 }

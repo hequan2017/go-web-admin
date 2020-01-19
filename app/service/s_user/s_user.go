@@ -124,9 +124,9 @@ func (a *User) GetAll() ([]*model.User, error) {
 }
 
 func (a *User) Delete() error {
-	err := model.DeleteUser(a.ID)
-	if err != nil {
-		return err
+	errs := model.DeleteUser(a.ID)
+	if errs != nil {
+		return errs
 	}
 	return nil
 }

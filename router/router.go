@@ -6,8 +6,6 @@ import (
 	"go-web-admin/app/api/a_menu"
 	"go-web-admin/app/api/a_role"
 	"go-web-admin/app/api/a_user"
-	"go-web-admin/library/jwt"
-	"go-web-admin/library/permission"
 )
 
 func MiddlewareCORS(r *ghttp.Request) {
@@ -19,8 +17,8 @@ func MiddlewareCORS(r *ghttp.Request) {
 func init() {
 	// 用户模块 路由注册 - 使用执行对象注册方式
 	s := g.Server()
-	s.Use(jwt.JWT, // 验证 token 是否正确
-		permission.CasbinMiddleware, MiddlewareCORS) // 权限验证
+	//s.Use(jwt.JWT, // 验证 token 是否正确
+	//	permission.CasbinMiddleware, MiddlewareCORS) // 权限验证
 
 	s.BindHandler("/token", a_user.Login)
 	s.BindHandler("/userInfo", a_user.UserInfo)

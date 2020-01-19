@@ -4,7 +4,6 @@ import (
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
 	"github.com/gogf/gf/os/glog"
-	"github.com/gogf/gf/util/gvalid"
 	"go-web-admin/app/service/s_role"
 	"go-web-admin/library/e"
 	"go-web-admin/library/inject"
@@ -16,14 +15,9 @@ import (
 // 权限组 API管理对象
 type Controller struct{}
 
-var rules = map[string]string{
-	"name": "required",
-	"menu": "required-with|integer",
-}
-
-var msgs = map[string]interface{}{
-	"name": "名称 不能为空",
-	"menu": "菜单 id 必须为 整数 列表",
+type RoleRequest struct {
+	Name string `v:"required#名称不能为空"`
+	Menu []int  `v:"required-with#权限组 必须为 [] 列表"`
 }
 
 // RESTFul - GET
@@ -73,9 +67,11 @@ func (c *Controller) Post(r *ghttp.Request) {
 
 	data, _ := r.GetJson()
 
-	if err := gvalid.CheckMap(data.ToMap(), rules, msgs); err != nil {
-		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.String())
+	var RoleData *RoleRequest
+	if err := r.Parse(&RoleData); err != nil {
+		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.Error())
 	}
+
 	roleService := s_role.Role{
 		Name: data.GetString("name"),
 		Menu: data.GetInts("menu"),
@@ -97,13 +93,10 @@ func (c *Controller) Post(r *ghttp.Request) {
 // RESTFul - Put
 func (c *Controller) Put(r *ghttp.Request) {
 	data, _ := r.GetJson()
-	if id := r.GetInt("id"); id <= 0 {
-		response.Json(r, http.StatusBadRequest, e.ERROR_ROLE_EDIT_FAIL, "")
-		r.ExitAll()
-	}
 
-	if err := gvalid.CheckMap(data.ToMap(), rules, msgs); err != nil {
-		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.String())
+	var RoleData *RoleRequest
+	if err := r.Parse(&RoleData); err != nil {
+		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.Error())
 	}
 
 	roleService := s_role.Role{
@@ -128,25 +121,22 @@ func (c *Controller) Put(r *ghttp.Request) {
 
 // RESTFul - DELETE
 func (c *Controller) Delete(r *ghttp.Request) {
-	if id := r.GetInt("id"); id <= 0 {
+
+	roleService := s_role.Role{ID: r.GetInt("id")}
+	_, err := roleService.ExistByID()
+	if err != nil {
+		response.Json(r, http.StatusBadRequest, e.ERROR_ROLE_DELETE_FAIL, "")
+		r.ExitAll()
+	}
+	role, err := roleService.Get()
+	err = roleService.Delete()
+
+	if err != nil {
 		response.Json(r, http.StatusBadRequest, e.ERROR_ROLE_DELETE_FAIL, "")
 		r.ExitAll()
 	} else {
-		roleService := s_role.Role{ID: id}
-		_, err := roleService.ExistByID()
-		if err != nil {
-			response.Json(r, http.StatusBadRequest, e.ERROR_ROLE_DELETE_FAIL, "")
-			r.ExitAll()
-		}
-		role, err := roleService.Get()
-		err = roleService.Delete()
-
-		if err != nil {
-			response.Json(r, http.StatusBadRequest, e.ERROR_ROLE_DELETE_FAIL, "")
-			r.ExitAll()
-		} else {
-			inject.Obj.Enforcer.DeleteUser(role.Name)
-			response.Json(r, http.StatusOK, e.SUCCESS, nil)
-		}
+		_, _ = inject.Obj.Enforcer.DeleteUser(role.Name)
+		response.Json(r, http.StatusOK, e.SUCCESS, nil)
 	}
+
 }

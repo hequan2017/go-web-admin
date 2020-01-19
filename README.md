@@ -1,11 +1,13 @@
 # go-web-admin  
 
-![版本](https://img.shields.io/badge/release-0.1.0-blue.svg)
+![版本](https://img.shields.io/badge/release-0.1.1-blue.svg)
 ![语言](https://img.shields.io/badge/language-golang1.12-blue.svg)
 ![base](https://img.shields.io/badge/env-goframe1.11.1-red.svg)
 
 
 > 基于 goframe 框架,完成 go web后端 基本组件开发
+
+
 
 ## 目录
 

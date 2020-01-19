@@ -3,7 +3,6 @@ package a_menu
 import (
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
-	"github.com/gogf/gf/util/gvalid"
 	"go-web-admin/app/service/s_menu"
 	"go-web-admin/library/e"
 	"go-web-admin/library/response"
@@ -14,18 +13,11 @@ import (
 // 用户API管理对象
 type Controller struct{}
 
-var rules = map[string]string{
-	"name":   "required",
-	"type":   "required",
-	"path":   "required",
-	"method": "required",
-}
-
-var msgs = map[string]interface{}{
-	"name":   "菜单名称 不能为空",
-	"type":   "类型 不能为空，只能为 菜单/目录/按钮",
-	"path":   "路径 不能为空",
-	"method": "方法 不能为空",
+type MenuRequest struct {
+	Name   string `v:"required#单名称 不能为空"`
+	Type   string `v:"required#类型 不能为空，只能为 菜单/目录/按钮"`
+	Path   string `v:"required#路径不能为空"`
+	Method string `v:"required#方法不能为空"`
 }
 
 // RESTFul - GET
@@ -75,9 +67,11 @@ func (c *Controller) Post(r *ghttp.Request) {
 
 	data, _ := r.GetJson()
 
-	if err := gvalid.CheckMap(data.ToMap(), rules, msgs); err != nil {
-		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.String())
+	var MenuData *MenuRequest
+	if err := r.Parse(&MenuData); err != nil {
+		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.Error())
 	}
+
 	menuService := s_menu.Menu{
 		Name:   data.GetString("name"),
 		Type:   data.GetString("type"),
@@ -96,13 +90,10 @@ func (c *Controller) Post(r *ghttp.Request) {
 // RESTFul - Put
 func (c *Controller) Put(r *ghttp.Request) {
 	data, _ := r.GetJson()
-	if id := r.GetInt("id"); id <= 0 {
-		response.Json(r, http.StatusBadRequest, e.ERROR_MENU_EDIT_FAIL, "")
-		r.ExitAll()
-	}
 
-	if err := gvalid.CheckMap(data.ToMap(), rules, msgs); err != nil {
-		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.String())
+	var MenuData *MenuRequest
+	if err := r.Parse(&MenuData); err != nil {
+		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.Error())
 	}
 
 	menuService := s_menu.Menu{
@@ -121,21 +112,19 @@ func (c *Controller) Put(r *ghttp.Request) {
 
 // RESTFul - DELETE
 func (c *Controller) Delete(r *ghttp.Request) {
-	if id := r.GetInt("id"); id <= 0 {
+
+	menuService := s_menu.Menu{ID: r.GetInt("id")}
+	_, err := menuService.ExistByID()
+	if err != nil {
 		response.Json(r, http.StatusBadRequest, e.ERROR_MENU_DELETE_FAIL, "")
-	} else {
-		menuService := s_menu.Menu{ID: id}
-		_, err := menuService.ExistByID()
-		if err != nil {
-			response.Json(r, http.StatusBadRequest, e.ERROR_MENU_DELETE_FAIL, "")
-			r.ExitAll()
-		}
-		err = menuService.Delete()
-		if err != nil {
-			response.Json(r, http.StatusBadRequest, e.ERROR_MENU_DELETE_FAIL, "")
-			r.ExitAll()
-		} else {
-			response.Json(r, http.StatusOK, e.SUCCESS, nil)
-		}
+		r.ExitAll()
 	}
+	err = menuService.Delete()
+	if err != nil {
+		response.Json(r, http.StatusBadRequest, e.ERROR_MENU_DELETE_FAIL, "")
+		r.ExitAll()
+	} else {
+		response.Json(r, http.StatusOK, e.SUCCESS, nil)
+	}
+
 }

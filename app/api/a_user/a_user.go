@@ -4,7 +4,6 @@ import (
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
 	"github.com/gogf/gf/os/glog"
-	"github.com/gogf/gf/util/gvalid"
 	"go-web-admin/app/service/s_user"
 	"go-web-admin/library/e"
 	"go-web-admin/library/inject"
@@ -17,16 +16,15 @@ import (
 // 用户API管理对象
 type Controller struct{}
 
-var rules = map[string]string{
-	"username": "required",
-	"password": "required",
-	"role":     "required-with|integer",
+type UserRequest struct {
+	Username string `v:"required#账号不能为空"`
+	Password string `v:"required#密码不能为空"`
+	Role     []int  `v:"required-with#权限组 必须为 [] 列表"`
 }
 
-var msgs = map[string]interface{}{
-	"username": "账号不能为空",
-	"password": "密码不能为空",
-	"role":     "权限组 id 必须为 整数 列表",
+type SignInRequest struct {
+	Username string `v:"required#账号不能为空"`
+	Password string `v:"required#密码不能为空"`
 }
 
 // 用户登录接口
@@ -34,8 +32,9 @@ func Login(r *ghttp.Request) {
 
 	data, _ := r.GetJson()
 
-	if err := gvalid.CheckMap(data.ToMap(), rules, msgs); err != nil {
-		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.String())
+	var SignInData *SignInRequest
+	if err := r.Parse(&SignInData); err != nil {
+		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.Error())
 	}
 
 	authService := s_user.User{Username: data.GetString("username"), Password: data.GetString("password")}
@@ -77,7 +76,7 @@ func (c *Controller) Get(r *ghttp.Request) {
 		userService.ID = id
 		user, err := userService.Get()
 		if err != nil {
-			response.Json(r, http.StatusBadRequest, e.ERROR_USER_EXIST_FAIL, "")
+			response.Json(r, http.StatusBadRequest, e.ERROR_USER_NOT_EXIST, "")
 			return
 		}
 		user.Password = ""
@@ -87,7 +86,6 @@ func (c *Controller) Get(r *ghttp.Request) {
 		response.Json(r, http.StatusOK, e.SUCCESS, data)
 
 	} else {
-
 		total, err := userService.Count()
 		if err != nil {
 			response.Json(r, http.StatusBadRequest, e.ERROR_USER_GET_S_FAIL, "")
@@ -115,9 +113,11 @@ func (c *Controller) Post(r *ghttp.Request) {
 
 	data, _ := r.GetJson()
 
-	if err := gvalid.CheckMap(data.ToMap(), rules, msgs); err != nil {
-		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.String())
+	var UserData *UserRequest
+	if err := r.Parse(&UserData); err != nil {
+		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.Error())
 	}
+
 	userService := s_user.User{
 		Username: data.GetString("username"),
 		Password: data.GetString("password"),
@@ -141,14 +141,11 @@ func (c *Controller) Post(r *ghttp.Request) {
 func (c *Controller) Put(r *ghttp.Request) {
 	data, _ := r.GetJson()
 
-	if id := r.GetInt("id"); id <= 0 {
-		response.Json(r, http.StatusBadRequest, e.ERROR_USER_EDIT_FAIL, "")
-		r.ExitAll()
+	var UserData *UserRequest
+	if err := r.Parse(&UserData); err != nil {
+		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.Error())
 	}
 
-	if err := gvalid.CheckMap(data.ToMap(), rules, msgs); err != nil {
-		response.Json(r, http.StatusBadRequest, e.INVALID_PARAMS, err.String())
-	}
 	userService := s_user.User{
 		ID:       r.GetInt("id"),
 		Username: data.GetString("username"),
@@ -172,24 +169,22 @@ func (c *Controller) Put(r *ghttp.Request) {
 
 // RESTFul - DELETE
 func (c *Controller) Delete(r *ghttp.Request) {
-	if id := r.GetInt("id"); id <= 0 {
-		response.Json(r, http.StatusBadRequest, e.ERROR_USER_DELETE_FAIL, "")
-	} else {
-		userService := s_user.User{ID: id}
-		_, err := userService.ExistByID()
-		if err != nil {
-			response.Json(r, http.StatusBadRequest, e.ERROR_USER_DELETE_FAIL, "")
-			r.ExitAll()
-		}
-		user, err := userService.Get()
-		err = userService.Delete()
 
-		if err != nil {
-			response.Json(r, http.StatusBadRequest, e.ERROR_USER_DELETE_FAIL, "")
-			r.ExitAll()
-		} else {
-			inject.Obj.Enforcer.DeleteUser(user.Username)
-			response.Json(r, http.StatusOK, e.SUCCESS, nil)
-		}
+	userService := s_user.User{ID: r.GetInt("id")}
+	_, err := userService.ExistByID()
+	if err != nil {
+		response.Json(r, http.StatusBadRequest, e.ERROR_USER_DELETE_FAIL, "")
+		r.ExitAll()
+	}
+	user, err := userService.Get()
+
+	err = userService.Delete()
+
+	if err != nil {
+		response.Json(r, http.StatusBadRequest, e.ERROR_USER_DELETE_FAIL, "")
+		r.ExitAll()
+	} else {
+		_, _ = inject.Obj.Enforcer.DeleteUser(user.Username)
+		response.Json(r, http.StatusOK, e.SUCCESS, nil)
 	}
 }

@@ -1,9 +1,5 @@
 package model
 
-import (
-	"github.com/jinzhu/gorm"
-)
-
 type Role struct {
 	Model
 	Name string `json:"name"`
@@ -13,7 +9,7 @@ type Role struct {
 func ExistRoleByID(id int) (bool, error) {
 	var role Role
 	err := db.Select("id").Where("id = ? AND deleted_on = ? ", id, 0).First(&role).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return false, err
 	}
 
@@ -36,7 +32,7 @@ func GetRoleTotal(maps interface{}) (int, error) {
 func GetRoles(pageNum int, pageSize int, maps interface{}) ([]*Role, error) {
 	var role []*Role
 	err := db.Preload("Menu").Where(maps).Offset(pageNum).Limit(pageSize).Find(&role).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return nil, err
 	}
 
@@ -46,7 +42,7 @@ func GetRoles(pageNum int, pageSize int, maps interface{}) ([]*Role, error) {
 func GetRole(id int) (*Role, error) {
 	var role Role
 	err := db.Preload("Menu").Where("id = ? AND deleted_on = ? ", id, 0).First(&role).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return nil, err
 	}
 
@@ -55,7 +51,7 @@ func GetRole(id int) (*Role, error) {
 func CheckRoleName(name string) (bool, error) {
 	var role Role
 	err := db.Where("name = ? AND deleted_on = ? ", name, 0).First(&role).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return false, err
 	}
 	if role.ID > 0 {
@@ -68,7 +64,7 @@ func CheckRoleName(name string) (bool, error) {
 func CheckRoleNameId(name string, id int) (bool, error) {
 	var role Role
 	err := db.Where("name = ? AND id != ? AND deleted_on = ? ", name, id, 0).First(&role).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return false, err
 	}
 	if role.ID > 0 {
@@ -106,8 +102,30 @@ func AddRole(data map[string]interface{}) (id int, err error) {
 
 func DeleteRole(id int) error {
 	var role Role
-	db.Where("id = ?", id).Find(&role)
-	db.Model(&role).Association("Menu").Delete()
+	err := db.Preload("Menu").Where("id = ? AND deleted_on = ? ", id, 0).First(&role).Error
+	if err != nil {
+		return err
+	}
+
+	var menu []Menu
+	var menus []int
+
+	if role.Menu != nil {
+		for _, value := range role.Menu {
+			menus = append(menus, value.ID)
+		}
+		db.Where("id in (?)", menus).Find(&menu)
+	}
+
+	errs := db.Where("id = ?", id).Delete(&role).Error
+	if errs != nil {
+		return errs
+	}
+
+	if menu != nil {
+		db.Model(&role).Association("Menu").Delete(menus)
+	}
+
 	if err := db.Where("id = ?", id).Delete(&role).Error; err != nil {
 		return err
 	}
@@ -126,7 +144,7 @@ func CleanAllRole() error {
 func GetRolesAll() ([]*Role, error) {
 	var role []*Role
 	err := db.Preload("Menu").Find(&role).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return nil, err
 	}
 

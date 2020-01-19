@@ -51,17 +51,16 @@ func GetUserTotal(maps interface{}) (int, error) {
 func GetUsers(pageNum int, pageSize int, maps interface{}) ([]*User, error) {
 	var user []*User
 	err := db.Preload("Role").Where(maps).Offset(pageNum).Limit(pageSize).Find(&user).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return nil, err
 	}
-
 	return user, nil
 }
 
 func GetUser(id int) (*User, error) {
 	var user User
 	err := db.Preload("Role").Where("id = ? AND deleted_on = ? ", id, 0).First(&user).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return nil, err
 	}
 
@@ -71,20 +70,7 @@ func GetUser(id int) (*User, error) {
 func CheckUserUsername(username string) (bool, error) {
 	var user User
 	err := db.Where("username = ? AND deleted_on = ? ", username, 0).First(&user).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return false, err
-	}
-	if user.ID > 0 {
-		return true, nil
-	}
-
-	return false, nil
-}
-
-func CheckUserUsernameId(username string, id int) (bool, error) {
-	var user User
-	err := db.Where("username = ? AND id != ? AND deleted_on = ? ", username, id, 0).First(&user).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return false, err
 	}
 	if user.ID > 0 {
@@ -127,10 +113,27 @@ func AddUser(data map[string]interface{}) (id int, err error) {
 
 func DeleteUser(id int) error {
 	var user User
-	db.Where("id = ?", id).Find(&user)
-	db.Model(&user).Association("Role").Delete()
-	if err := db.Where("id = ?", id).Delete(&user).Error; err != nil {
+	err := db.Preload("Role").Where("id = ? AND deleted_on = ? ", id, 0).First(&user).Error
+	if err != nil {
 		return err
+	}
+	var role []Role
+	var roles []int
+
+	if user.Role != nil {
+		for _, value := range user.Role {
+			roles = append(roles, value.ID)
+		}
+		db.Where("id in (?)", roles).Find(&role)
+	}
+
+	errs := db.Where("id = ?", id).Delete(&user).Error
+	if errs != nil {
+		return errs
+	}
+
+	if roles != nil {
+		db.Model(&user).Association("Role").Delete(role)
 	}
 
 	return nil
@@ -146,7 +149,7 @@ func CleanAllUser() error {
 func GetUsersAll() ([]*User, error) {
 	var user []*User
 	err := db.Where("deleted_on = ? ", 0).Preload("Role").Find(&user).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return nil, err
 	}
 
