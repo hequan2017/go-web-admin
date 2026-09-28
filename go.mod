@@ -14,6 +14,4 @@ require (
 	github.com/jinzhu/gorm v1.9.10
 )
 
-// 2026-09 依赖安全升级：dgrijalva/jwt-go 已迁移至 golang-jwt/jwt/v4
-
-// 2026-09: jwt-go 已迁移至 golang-jwt/jwt/v4（触发 Dependabot 重新分析）
+// 2026-09 依赖安全升级（触发 Dependabot 重新分析）
