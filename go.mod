@@ -13,3 +13,5 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/jinzhu/gorm v1.9.10
 )
+
+// 2026-09 依赖安全升级：dgrijalva/jwt-go 已迁移至 golang-jwt/jwt/v4
